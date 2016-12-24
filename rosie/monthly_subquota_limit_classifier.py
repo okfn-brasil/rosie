@@ -57,7 +57,7 @@ class MonthlySubquotaLimitClassifier(TransformerMixin):
 
 
     def predict_proba(self, X=None):
-        return 1.
+        return np.repeat(1., len(X))
 
 
     def __create_columns(self):
