@@ -2,6 +2,7 @@ import unicodedata
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 from sklearn.base import TransformerMixin
 from sklearn.cluster import KMeans
 
@@ -32,6 +33,12 @@ class MealPriceOutlierClassifier(TransformerMixin):
         pass
 
     def predict(self, X):
+        return self.__predict(X)['y']
+
+    def predict_proba(self, X):
+        return np.r_[self.__predict(X)['probability']]
+
+    def __predict(self, X):
         _X = X.copy()
         companies = _X[self.__applicable_rows(_X)] \
             .groupby('cnpj_cpf').apply(self.__company_stats) \
@@ -39,9 +46,15 @@ class MealPriceOutlierClassifier(TransformerMixin):
         companies['cluster'] = \
             self.cluster_model.predict(companies[self.CLUSTER_KEYS])
         companies = pd.merge(companies,
-                             self.clusters[['cluster', 'threshold']],
-                             how='left')
-        _X = pd.merge(_X, companies[['cnpj_cpf', 'threshold']], how='left')
+                             self.clusters,
+                             how='left',
+                             on='cluster',
+                             suffixes=['', '_cluster'])
+        _X = pd.merge(_X, companies, how='left', on='cnpj_cpf')
+        rows = self.__applicable_rows(_X)
+        _X['probability'] = float('nan')
+        _X.loc[rows, 'probability'] = \
+            self.__probability(_X[rows], 4, col_suffix='_cluster')
         known_companies = companies[self.__applicable_company_rows(companies)]
         known_thresholds = known_companies \
             .groupby('cnpj_cpf') \
@@ -50,14 +63,19 @@ class MealPriceOutlierClassifier(TransformerMixin):
             .rename(columns={0: 'cnpj_threshold'})
         _X = pd.merge(_X, known_thresholds, how='left')
         if 'cnpj_threshold' in _X.columns:
-            _X.loc[_X['cnpj_threshold'].notnull(),
-                  'threshold'] = _X['cnpj_threshold']
+            rows = rows & _X['cnpj_threshold'].notnull()
+            _X.loc[rows, 'threshold'] = _X['cnpj_threshold']
+            _X.loc[rows, 'probability'] = self.__probability(_X[rows])
         _X['y'] = 1
         is_outlier = self.__applicable_rows(_X) & \
             _X['threshold'].notnull() & \
             (_X['total_net_value'] > _X['threshold'])
         _X.loc[is_outlier, 'y'] = -1
-        return _X['y']
+        return _X
+
+    def __probability(self, X, stds_threshold=3, col_suffix=''):
+        mean_col, std_col = 'mean' + col_suffix, 'std' + col_suffix
+        return 1 - stats.norm.pdf(stds_threshold, X[mean_col], X[std_col]) / 2
 
     def __applicable_rows(self, X):
         return (X['subquota_description'] == 'Congressperson meal') & \
