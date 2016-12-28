@@ -29,6 +29,12 @@ class TraveledSpeedsClassifier(TransformerMixin):
         pass
 
     def predict(self, X):
+        return self.__predict(X)['y']
+
+    def predict_proba(self, X):
+        return np.r_[self.__predict(X)['probability']]
+
+    def __predict(self, X):
         check_is_fitted(self, ['polynomial', '_polynomial_fn'])
 
         _X = X.copy()
@@ -37,8 +43,8 @@ class TraveledSpeedsClassifier(TransformerMixin):
         _X = pd.merge(X, _X, how='left', left_on=self.AGG_KEYS, right_on=self.AGG_KEYS)
         is_outlier = self.__applicable_rows(_X) & \
             (_X['expenses_threshold_outlier'] | _X['traveled_speed_outlier'])
-        y = is_outlier.astype(np.int).replace({1: -1, 0: 1})
-        return y
+        _X['y'] = is_outlier.astype(np.int).replace({1: -1, 0: 1})
+        return _X
 
     def __aggregate_dataset(self, X):
         X = X[self.__applicable_rows(X)]
@@ -59,6 +65,13 @@ class TraveledSpeedsClassifier(TransformerMixin):
         _X['expenses_threshold_outlier'] = _X['expenses'] > 8
         threshold = self.__threshold_for_contamination(_X, self.contamination)
         _X['traveled_speed_outlier'] = _X['diff_distance'] > threshold
+        _X['probability'] = \
+            (_X['distance_traveled'] - _X['expected_distance']) / \
+            _X['diff_distance'].max()
+        _X['probability'] = \
+            np.r_[[np.repeat(0., len(_X)),
+                   _X['probability']]].max(axis=0)
+        _X.loc[_X['expenses'] > 8, 'probability'] = 1.
         return _X
 
     def __applicable_rows(self, X):
