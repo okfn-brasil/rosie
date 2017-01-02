@@ -2,7 +2,7 @@ from flask import Flask
 
 from dataset import full_path, ranking
 
-ranking().to_csv(full_path('ranking.csv'))
+ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
 
 @app.route('/')

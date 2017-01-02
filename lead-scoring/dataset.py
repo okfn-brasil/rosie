@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import math
 import os.path
 
@@ -5,22 +6,22 @@ import pandas as pd
 import numpy as np
 
 DATA_PATH = '/Users/irio/Desktop/serenata-data'
-DISPLAY_KEYS = [
-    'date',
-    # 'document_id',
-    'name',
-    'net_value',
-    # 'state',
-    # 'party',
-    # 'supplier',
-    'price',
-    'subquota',
-    'day',
-    'has_receipt',
-    'is_in_office',
-    'rosie_score',
-    'score',
-]
+DISPLAY_KEYS = OrderedDict([
+    ('issue_date', 'Data do gasto'),
+    ('congressperson_name', 'Deputado'),
+    ('total_net_value', 'Valor'),
+    ('url', 'URL'),
+    ('meal_price_outlier', 'Preço de refeição suspeito?'),
+    ('over_monthly_subquota_limit', 'Acima da subcota?'),
+    ('suspicious_traveled_speed_day', 'Distância viajada suspeita?'),
+    ('has_receipt', 'Tem recibo?'),
+    ('is_in_office', 'Em mandato?'),
+    ('rosie_score', 'Nível de suspeita'),
+    ('score', 'Ranking'),
+    ('document_id', 'ID'),
+    ('year', 'Ano'),
+    ('applicant_id', 'ID Deputado'),
+])
 
 
 def full_path(path):
@@ -29,14 +30,19 @@ def full_path(path):
 
 def display(dataset):
     data = dataset.copy()
-    data.rename(columns={'meal_price_outlier': 'price',
-                         'over_monthly_subquota_limit': 'subquota',
-                         'suspicious_traveled_speed_day': 'day',
-                         'congressperson_name': 'name',
-                         'issue_date': 'date',
-                         'total_net_value': 'net_value'}, inplace=True)
-    data['date'] = data['date'].str[:10]
-    return data.head(13)[DISPLAY_KEYS]
+    data['issue_date'] = data['issue_date'].str[:10]
+    data['url'] = data['document_id'] \
+        .apply(lambda x: 'https://jarbas.datasciencebr.com/#/documentId/{}'.format(x))
+    data['rosie_score'] = data['rosie_score'].apply(__display_percentage)
+    data['score'] = data['score'].apply(__display_percentage)
+    data['total_net_value'] = data['total_net_value'] \
+        .apply(lambda x: 'R$ {0:.2f}'.format(x))
+    data = data[[k for k in DISPLAY_KEYS.keys()]]
+    data.rename(columns=DISPLAY_KEYS, inplace=True)
+    return data
+
+def __display_percentage(values):
+    return '{0:.2f}%'.format(values * 100)
 
 def ranking():
     data = __irregularities()
@@ -46,7 +52,7 @@ def ranking():
     data = data.sort_values(['is_in_office', 'has_receipt', 'score'],
                             ascending=[False, False, False])
     remove_receipts_from_same_case(data)
-    return data
+    return display(data)
 
 def remove_receipts_from_same_case(data):
     speed_day_keys = ['applicant_id',
