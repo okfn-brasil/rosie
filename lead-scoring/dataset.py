@@ -45,8 +45,19 @@ def ranking():
     data['score'] = __score(data)
     data = data.sort_values(['is_in_office', 'has_receipt', 'score'],
                             ascending=[False, False, False])
+    remove_receipts_from_same_case(data)
     return data
 
+def remove_receipts_from_same_case(data):
+    speed_day_keys = ['applicant_id',
+                      'issue_date',
+                      'suspicious_traveled_speed_day']
+    subquota_keys = ['applicant_id',
+                     'month',
+                     'over_monthly_subquota_limit']
+    data.drop_duplicates(speed_day_keys, inplace=True)
+    data.drop_duplicates(subquota_keys, inplace=True)
+    return data
 
 def __is_in_office(data):
     return data \
