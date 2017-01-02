@@ -18,8 +18,8 @@ DISPLAY_KEYS = OrderedDict([
     ('is_in_office', 'Em mandato?'),
     ('rosie_score', 'Nível de suspeita'),
     ('score', 'Ranking'),
-    ('document_id', 'ID'),
     ('year', 'Ano'),
+    ('document_id', 'ID'),
     ('applicant_id', 'ID Deputado'),
 ])
 
