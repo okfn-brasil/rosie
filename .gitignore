@@ -3,4 +3,5 @@
 .python-version
 __pycache__/
 htmlcov/
+lead-scoring/.env
 
