@@ -1,1 +1,1 @@
-web: gunicorn server:app --log-file -
+web: gunicorn lead_scoring.index:app --log-file -

@@ -1,6 +1,7 @@
 git+https://github.com/datasciencebr/serenata-toolbox.git#egg=serenata-toolbox
 Flask==0.11.1
 geopy>=1.11.0
+gunicorn==19.6.0
 pycpfcnpj==1.0.2
 pymongo==3.4.0
 python-decouple==3.0
