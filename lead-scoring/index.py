@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 from dataset import full_path, ranking
 
-ranking().to_csv(full_path('ranking.csv'), index=False)
+# ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
 mongodb = MongoClient(config('MONGODB_SERVER'))
 db = getattr(mongodb, config('MONGODB_DATABASE'))
