@@ -1,4 +1,5 @@
 import json
+import os
 
 from decouple import config
 from flask import Flask, jsonify, request
@@ -8,8 +9,8 @@ from pymongo import MongoClient
 
 # ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
-mongodb = MongoClient(config('MONGODB_SERVER'))
-db = getattr(mongodb, config('MONGODB_DATABASE'))
+mongodb = MongoClient(config('MONGODB_URI', default=os.environ['MONGODB_URI']))
+db = getattr(mongodb, config('MONGODB_DATABASE', default=os.environ['MONGODB_DATABASE']))
 
 
 @app.route('/', methods=['GET'])
