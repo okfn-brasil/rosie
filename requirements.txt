@@ -5,5 +5,4 @@ gunicorn==19.6.0
 pycpfcnpj==1.0.2
 pymongo==3.4.0
 python-decouple==3.0
-scikit-learn>=0.17
-scipy>=0.18
+scikit-learn==0.18.1
