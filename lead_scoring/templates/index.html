@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          {% for key in ranking[0].keys() %}
+            <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for line in ranking %}
+          <tr>
+            {% for key, value in line.items() %}
+              <td>
+                {% if key == 'URL' %}
+                  <a href="{{ value }}">Link</a>
+                {% else %}
+                  {{ value }}
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

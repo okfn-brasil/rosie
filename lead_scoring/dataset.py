@@ -46,6 +46,7 @@ def __display_percentage(values):
 
 def ranking():
     data = __irregularities()
+    import ipdb; ipdb.set_trace()
     data = pd.merge(data, __is_in_office(data))
     data['has_receipt'] = data['year'] > 2011
     data['score'] = __score(data)

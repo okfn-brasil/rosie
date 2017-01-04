@@ -1,25 +1,36 @@
+from collections import OrderedDict
+from itertools import chain
 import json
 import os
 
 from decouple import config
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from pymongo import MongoClient
 
 # from dataset import full_path, ranking
 
 # ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
-mongodb = MongoClient(config('MONGODB_URI', default=os.environ['MONGODB_URI']))
+mongodb = MongoClient(config('MONGODB_URI', default=os.environ['MONGODB_URI']), document_class=OrderedDict)
 db = getattr(mongodb, config('MONGODB_DATABASE', default=os.environ['MONGODB_DATABASE']))
 
 
 @app.route('/', methods=['GET'])
-def get():
+def root():
+    reported_docs = db.reports.find({}, {'_id': 0, 'documents':1})
+    reported_docs = chain(*[doc['documents'] for doc in reported_docs])
+    query = {'ID': {'$nin': list(reported_docs)}}
+    ranking = db.ranking.find(query, {'_id': 0})
+    return render_template('index.html', ranking=ranking)
+
+
+@app.route('/reports', methods=['GET'])
+def get_reports():
     return jsonify([clean(document) for document in db.reports.find()])
 
 
-@app.route('/', methods=['POST'])
-def post():
+@app.route('/reports', methods=['POST'])
+def post_reports():
     data = clean(request.get_json())
     if not all(data.get(key) for key in ('documents', 'email')):
         error = {'error': 'Missing `documents` and `email` data.'}
