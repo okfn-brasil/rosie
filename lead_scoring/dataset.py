@@ -33,12 +33,12 @@ def display(dataset):
     data['issue_date'] = data['issue_date'].str[:10]
     data['url'] = data['document_id'] \
         .apply(lambda x: 'https://jarbas.datasciencebr.com/#/documentId/{}'.format(x))
-    data['rosie_score'] = data['rosie_score'].apply(__display_percentage)
-    data['score'] = data['score'].apply(__display_percentage)
-    data['total_net_value'] = data['total_net_value'] \
-        .apply(lambda x: 'R$ {0:.2f}'.format(x))
+    # data['rosie_score'] = data['rosie_score'].apply(__display_percentage)
+    # data['score'] = data['score'].apply(__display_percentage)
+    # data['total_net_value'] = data['total_net_value'] \
+    #     .apply(lambda x: 'R$ {0:.2f}'.format(x))
     data = data[[k for k in DISPLAY_KEYS.keys()]]
-    data.rename(columns=DISPLAY_KEYS, inplace=True)
+    # data.rename(columns=DISPLAY_KEYS, inplace=True)
     return data
 
 def __display_percentage(values):
@@ -46,7 +46,7 @@ def __display_percentage(values):
 
 def ranking():
     data = __irregularities()
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     data = pd.merge(data, __is_in_office(data))
     data['has_receipt'] = data['year'] > 2011
     data['score'] = __score(data)
