@@ -35,7 +35,10 @@ DISPLAY_KEYS = OrderedDict([
 def root():
     reported_docs = db.reports.find({}, {'_id': 0, 'documents':1})
     reported_docs = chain(*[doc['documents'] for doc in reported_docs])
-    query = {'document_id': {'$nin': list(reported_docs)}}
+    query = {
+        'document_id': {'$nin': list(reported_docs)},
+        'status': {'$ne': 'false_positive'},
+    }
     ranking_docs = db.ranking.find(query, {'_id': 0}) \
         .sort([('is_in_office', -1), ('has_receipt', -1), ('score', -1)]) \
         .limit(20)
@@ -50,13 +53,14 @@ def root():
 @app.route('/ranking', methods=['POST'])
 def update_ranking():
     query = {'document_id': int(request.form['document_id'])}
-    if request.form['under_investigation'] == '1':
+    status = request.form['status']
+    if status in ['false_positive', 'under_investigation']:
         db.ranking.update_one(query, {
-            '$set': {'under_investigation': True}
+            '$set': {'status': status}
         })
-    elif request.form['under_investigation'] == '0':
+    elif status == 'none':
         db.ranking.update_one(query, {
-            '$unset': {'under_investigation': True}
+            '$unset': {'status': True}
         })
     return '', 200, {}
 

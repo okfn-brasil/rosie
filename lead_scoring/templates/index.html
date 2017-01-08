@@ -33,10 +33,22 @@
         {% for line in ranking %}
           <tr>
             <td class="status">
-              {% if line['under_investigation'] %}
-                em andamento
+              {% if line['status'] %}
+                <button type="button"
+                        name="button"
+                        class="change-status-btn"
+                        data-document-id="{{ line['document_id'] }}"
+                        data-status="false_positive">
+                  Falso positivo
+                </button>
               {% else %}
-                <button type="button" name="button" class="audit-btn" data-document-id="{{ line['document_id'] }}">Auditar</button>
+                <button type="button"
+                        name="button"
+                        class="change-status-btn audit-btn"
+                        data-document-id="{{ line['document_id'] }}"
+                        data-status="under_investigation">
+                  Auditar
+                </button>
               {% endif %}
             </td>
             {% for column in columns.keys() %}
@@ -55,16 +67,17 @@
   </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
 <script type="text/javascript">
+  $('.change-status-btn').click(function(event) {
+    var target = event.target;
+    $.post('/ranking', {
+      document_id: target.getAttribute('data-document-id'),
+      status: target.getAttribute('data-status'),
+    }, function() { location.reload() });
+  });
+
   $('.audit-btn').click(function(event) {
-    var documentId = event.target.getAttribute('data-document-id')
-    var jarbasUrl = event.target.parentElement.parentElement.querySelector('a').getAttribute('href')
-    $.post('/ranking',
-      {document_id: documentId, under_investigation: 1},
-      function() {
-        window.open(jarbasUrl, '_blank').focus();
-        location.reload();
-      }
-    );
+    var jarbasUrl = event.target.parentElement.parentElement.querySelector('a').getAttribute('href');
+    window.open(jarbasUrl, '_blank').focus();
   });
 </script>
 </html>
