@@ -13,7 +13,7 @@ class Dataset:
         self.path = path
 
     def get(self):
-        self.update_datasets()
+        # self.update_datasets()
         reimbursements = self.get_reimbursements()
         companies = self.get_companies()
         return pd.merge(reimbursements, companies,
