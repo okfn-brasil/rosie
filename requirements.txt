@@ -1,4 +1,3 @@
-git+https://github.com/datasciencebr/serenata-toolbox.git#egg=serenata-toolbox
 Flask==0.11.1
 gunicorn==19.6.0
 pycpfcnpj==1.0.2
