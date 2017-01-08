@@ -7,12 +7,28 @@ from decouple import config
 from flask import Flask, jsonify, render_template, request
 from pymongo import MongoClient
 
-from dataset import DISPLAY_KEYS, full_path, ranking
-
+#from dataset import DISPLAY_KEYS, full_path, ranking
 # ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
 mongodb = MongoClient(config('MONGODB_URI', default=os.environ['MONGODB_URI']), document_class=OrderedDict)
 db = getattr(mongodb, config('MONGODB_DATABASE', default=os.environ['MONGODB_DATABASE']))
+
+DISPLAY_KEYS = OrderedDict([
+    ('url', 'URL'),
+    ('issue_date', 'Data do gasto'),
+    ('congressperson_name', 'Deputado'),
+    ('total_net_value', 'Valor'),
+    ('meal_price_outlier', 'Preço de refeição suspeito?'),
+    ('over_monthly_subquota_limit', 'Acima da subcota?'),
+    ('suspicious_traveled_speed_day', 'Distância viajada suspeita?'),
+    ('has_receipt', 'Tem recibo?'),
+    ('is_in_office', 'Em mandato?'),
+    ('rosie_score', 'Nível de suspeita'),
+    ('score', 'Ranking'),
+    ('year', 'Ano'),
+    ('document_id', 'ID'),
+    ('applicant_id', 'ID Deputado'),
+])
 
 
 @app.route('/', methods=['GET'])
