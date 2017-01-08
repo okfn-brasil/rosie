@@ -2,26 +2,49 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <title>Rosie</title>
+    <style media="screen">
+      .status,
+      [value="True"],
+      [value="False"] {
+        text-align: center;
+      }
+
+      [value="True"] {
+        border-bottom: 1px solid green;
+      }
+
+      .ranking-table {
+        margin: 0 auto;
+      }
+    </style>
   </head>
   <body>
-    <table>
+    <table class="ranking-table">
       <thead>
         <tr>
-          {% for key in ranking[0].keys() %}
-            <th>{{ key }}</th>
+          <th>Status</th>
+          {% for column in columns.values() %}
+            <th>{{ column }}</th>
           {% endfor %}
         </tr>
       </thead>
       <tbody>
         {% for line in ranking %}
           <tr>
-            {% for key, value in line.items() %}
-              <td>
-                {% if key == 'URL' %}
-                  <a href="{{ value }}">Link</a>
+            <td class="status">
+              {% if line['under_investigation'] %}
+                em andamento
+              {% else %}
+                <button type="button" name="button" class="audit-btn" data-document-id="{{ line['document_id'] }}">Auditar</button>
+              {% endif %}
+            </td>
+            {% for column in columns.keys() %}
+              <td value="{{ line[column] }}">
+                {% if column == 'url' %}
+                  <a href="{{ line[column] }}" target="_blank">Link</a>
                 {% else %}
-                  {{ value }}
+                  {{ line[column] }}
                 {% endif %}
               </td>
             {% endfor %}
@@ -30,4 +53,18 @@
       </tbody>
     </table>
   </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+  $('.audit-btn').click(function(event) {
+    var documentId = event.target.getAttribute('data-document-id')
+    var jarbasUrl = event.target.parentElement.parentElement.querySelector('a').getAttribute('href')
+    $.post('/ranking',
+      {document_id: documentId, under_investigation: 1},
+      function() {
+        window.open(jarbasUrl, '_blank').focus();
+        location.reload();
+      }
+    );
+  });
+</script>
 </html>

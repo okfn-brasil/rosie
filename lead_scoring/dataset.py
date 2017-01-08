@@ -7,10 +7,10 @@ import numpy as np
 
 DATA_PATH = '/Users/irio/Desktop/serenata-data'
 DISPLAY_KEYS = OrderedDict([
+    ('url', 'URL'),
     ('issue_date', 'Data do gasto'),
     ('congressperson_name', 'Deputado'),
     ('total_net_value', 'Valor'),
-    ('url', 'URL'),
     ('meal_price_outlier', 'Preço de refeição suspeito?'),
     ('over_monthly_subquota_limit', 'Acima da subcota?'),
     ('suspicious_traveled_speed_day', 'Distância viajada suspeita?'),
@@ -46,7 +46,6 @@ def __display_percentage(values):
 
 def ranking():
     data = __irregularities()
-    # import ipdb; ipdb.set_trace()
     data = pd.merge(data, __is_in_office(data))
     data['has_receipt'] = data['year'] > 2011
     data['score'] = __score(data)

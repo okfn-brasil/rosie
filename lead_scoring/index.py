@@ -7,7 +7,7 @@ from decouple import config
 from flask import Flask, jsonify, render_template, request
 from pymongo import MongoClient
 
-# from dataset import full_path, ranking
+from dataset import DISPLAY_KEYS, full_path, ranking
 
 # ranking().to_csv(full_path('ranking.csv'), index=False)
 app = Flask(__name__)
@@ -19,10 +19,30 @@ db = getattr(mongodb, config('MONGODB_DATABASE', default=os.environ['MONGODB_DAT
 def root():
     reported_docs = db.reports.find({}, {'_id': 0, 'documents':1})
     reported_docs = chain(*[doc['documents'] for doc in reported_docs])
-    query = {'ID': {'$nin': list(reported_docs)}}
-    ranking = db.ranking.find(query, {'_id': 0})
-    return render_template('index.html', ranking=ranking)
+    query = {'document_id': {'$nin': list(reported_docs)}}
+    ranking_docs = db.ranking.find(query, {'_id': 0}) \
+        .sort([('is_in_office', -1), ('has_receipt', -1), ('score', -1)]) \
+        .limit(20)
+    columns = DISPLAY_KEYS.copy()
+    for key in ['year', 'document_id', 'applicant_id', 'rosie_score', 'score']:
+        columns.pop(key, None)
 
+    return render_template('index.html',
+                           ranking=ranking_docs,
+                           columns=columns)
+
+@app.route('/ranking', methods=['POST'])
+def update_ranking():
+    query = {'document_id': int(request.form['document_id'])}
+    if request.form['under_investigation'] == '1':
+        db.ranking.update_one(query, {
+            '$set': {'under_investigation': True}
+        })
+    elif request.form['under_investigation'] == '0':
+        db.ranking.update_one(query, {
+            '$unset': {'under_investigation': True}
+        })
+    return '', 200, {}
 
 @app.route('/reports', methods=['GET'])
 def get_reports():
@@ -31,7 +51,7 @@ def get_reports():
 
 @app.route('/reports', methods=['POST'])
 def post_reports():
-    data = clean(request.get_json())
+    data = clean(request.form)
     if not all(data.get(key) for key in ('documents', 'email')):
         error = {'error': 'Missing `documents` and `email` data.'}
         return jsonify(error), 400
