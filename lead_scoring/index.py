@@ -15,14 +15,14 @@ db = getattr(mongodb, config('MONGODB_DATABASE', default=os.environ['MONGODB_DAT
 
 DISPLAY_KEYS = OrderedDict([
     ('url', 'URL'),
-    ('issue_date', 'Data do gasto'),
+    # ('issue_date', 'Data do gasto'),
     ('congressperson_name', 'Deputado'),
-    ('total_net_value', 'Valor'),
+    # ('total_net_value', 'Valor'),
     ('meal_price_outlier', 'Preço de refeição suspeito?'),
     ('over_monthly_subquota_limit', 'Acima da subcota?'),
     ('suspicious_traveled_speed_day', 'Distância viajada suspeita?'),
-    ('has_receipt', 'Tem recibo?'),
-    ('is_in_office', 'Em mandato?'),
+    # ('has_receipt', 'Tem recibo?'),
+    # ('is_in_office', 'Em mandato?'),
     ('rosie_score', 'Nível de suspeita'),
     ('score', 'Ranking'),
     ('year', 'Ano'),
