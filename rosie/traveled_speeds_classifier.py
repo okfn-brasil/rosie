@@ -1,6 +1,7 @@
 from itertools import combinations
 
 import numpy as np
+import dask.dataframe as dd
 import pandas as pd
 from geopy.distance import vincenty as distance
 from sklearn.base import TransformerMixin
@@ -45,12 +46,14 @@ class TraveledSpeedsClassifier(TransformerMixin):
         distances_traveled = X.groupby(self.AGG_KEYS) \
             .apply(self.__calculate_sum_distances).reset_index() \
             .rename(columns={0: 'distance_traveled'})
+        distances_traveled = dd.from_pandas(distances_traveled, npartitions=10)
         expenses = X.groupby(self.AGG_KEYS)['applicant_id'] \
             .agg({'expenses': len}).reset_index()
-        _X = pd.merge(distances_traveled, expenses,
+        expenses = dd.from_pandas(expenses, npartitions=10)
+        _X = dd.merge(distances_traveled, expenses,
                       left_on=self.AGG_KEYS,
                       right_on=self.AGG_KEYS)
-        return _X
+        return _X.compute()
 
     def __classify_dataset(self, X):
         _X = X.copy()
@@ -62,8 +65,10 @@ class TraveledSpeedsClassifier(TransformerMixin):
         return _X
 
     def __applicable_rows(self, X):
-        return (X['subquota_description'] == 'Congressperson meal') & \
-            X[['congressperson_id', 'latitude', 'longitude']].notnull().all(axis=1)
+        _X = dd.from_pandas(X, npartitions=10)
+        _X = (_X['subquota_description'] == 'Congressperson meal') & \
+            _X[['congressperson_id', 'latitude', 'longitude']].notnull().all(axis=1)
+        return _X.compute()
 
     def __calculate_sum_distances(self, X):
         coordinate_list = X[['latitude', 'longitude']].values
