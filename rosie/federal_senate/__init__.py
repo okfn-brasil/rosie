@@ -4,6 +4,6 @@ from rosie.core import Core
 
 
 def main(target_directory='/tmp/serenata-data'):
-    adapter = Adapter(target_directory)
+    adapter = Adapter(target_directory, years=years)
     core = Core(settings, adapter)
     core()

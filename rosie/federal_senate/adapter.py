@@ -14,8 +14,9 @@ COLUMNS = {
 
 class Adapter:
 
-    def __init__(self, path):
+    def __init__(self, path, years=None):
         self.path = path
+        self.years = years
 
     @property
     def dataset(self):
@@ -43,7 +44,7 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        federal_senate = Dataset(self.path)
+        federal_senate = Dataset(self.path, years=self.years)
         federal_senate.fetch()
         federal_senate.translate()
         federal_senate_reimbursements_path = federal_senate.clean()

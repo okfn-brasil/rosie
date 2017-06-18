@@ -17,8 +17,9 @@ COLUMNS = {
 class Adapter:
     COMPANIES_DATASET = '2016-09-03-companies.xz'
 
-    def __init__(self, path):
+    def __init__(self, path, years=None):
         self.path = path
+        self.years = years
 
     @property
     def dataset(self):
@@ -56,7 +57,7 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        chamber_of_deputies = Dataset(self.path)
+        chamber_of_deputies = Dataset(self.path, self.years)
         chamber_of_deputies.fetch()
         chamber_of_deputies.convert_to_csv()
         chamber_of_deputies.translate()
