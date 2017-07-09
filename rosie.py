@@ -29,11 +29,13 @@ def run():
         help()
         exit(1)
     target_directory = argv[3] if len(argv) >= 4 else '/tmp/serenata-data/'
+    klass = getattr(rosie, target_module)
     if '--years' in argv:
         years = argv[argv.index('--years') + 1]
         years = [int(num) for num in years.split(',')]
-    klass = getattr(rosie, target_module)
-    klass.main(target_directory, years=years)
+        klass.main(target_directory, years=years)
+    else:
+        klass.main(target_directory)
 
 
 def test():
