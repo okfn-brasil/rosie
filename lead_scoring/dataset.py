@@ -64,11 +64,9 @@ def _is_in_office(data):
 
 
 def _irregularities():
-    data = pd.read_csv('suspicions.xz'),
-                       low_memory=False)
+    data = pd.read_csv('suspicions.xz', low_memory=False)
     is_valid_suspicion = data.select_dtypes(include=[np.bool]).any(axis=1)
     data = data[is_valid_suspicion]
-    reimbursements = pd.read_csv('reimbursements.xz'),
-                                 low_memory=False)
+    reimbursements = pd.read_csv('reimbursements.xz', low_memory=False)
     reimbursements = reimbursements.query('congressperson_id.notnull()')
     return pd.merge(data, reimbursements)
