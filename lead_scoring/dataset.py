@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from collections import OrderedDict
 import math
 import os.path
@@ -70,3 +71,20 @@ def _irregularities():
     reimbursements = pd.read_csv('reimbursements.xz', low_memory=False)
     reimbursements = reimbursements.query('congressperson_id.notnull()')
     return pd.merge(data, reimbursements)
+
+
+def main():
+    dataset = ranking()
+    dataset.to_csv('ranking.csv', index=False)
+
+
+if __name__ == '__main__':
+    description = "Script to generate Maratonny's list of suspicions"
+    parser = ArgumentParser(description=description)
+    parser.add_argument(
+        '--data-path', '-c', default='',
+        help=('Path to a directory where you can find:\n'
+              '  - reimbursements.xz\n  - suspicions.xz')
+    )
+    args = parser.parse_args()
+    main()
