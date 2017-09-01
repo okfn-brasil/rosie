@@ -40,19 +40,7 @@ def ranking():
     data['has_receipt'] = data['year'] > 2011
     data = data.sort_values(['year', 'has_receipt'],
                             ascending=[False, False])
-    remove_receipts_from_same_case(data)
     return display(data)
-
-def remove_receipts_from_same_case(data):
-    speed_day_keys = ['applicant_id',
-                      'issue_date',
-                      'suspicious_traveled_speed_day']
-    subquota_keys = ['applicant_id',
-                     'month',
-                     'over_monthly_subquota_limit']
-    data.drop_duplicates(speed_day_keys, inplace=True)
-    data.drop_duplicates(subquota_keys, inplace=True)
-    return data
 
 
 def _irregularities():
