@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
-from collections import OrderedDict
 import math
 import os.path
+from argparse import ArgumentParser
+from collections import OrderedDict
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 DISPLAY_KEYS = OrderedDict([
     ('url', 'URL'),
@@ -32,8 +32,10 @@ def display(dataset):
     data = data[[k for k in DISPLAY_KEYS.keys()]]
     return data
 
+
 def _display_percentage(values):
     return '{0:.2f}%'.format(values * 100)
+
 
 def ranking():
     data = _irregularities()
