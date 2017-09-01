@@ -54,7 +54,7 @@ def _irregularities():
 
 def main():
     dataset = ranking()
-    dataset.to_csv('ranking.csv', index=False)
+    dataset.to_csv('maratonny.csv', index=False)
 
 
 if __name__ == '__main__':
