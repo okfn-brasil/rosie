@@ -58,7 +58,9 @@ def main():
 
 
 if __name__ == '__main__':
-    description = "Script to generate Maratonny's list of suspicions"
+    description = """
+    Script to generate Maratonny's list of suspicions to be investigated
+    """
     parser = ArgumentParser(description=description)
     parser.add_argument(
         '--data-path', '-c', default='',
