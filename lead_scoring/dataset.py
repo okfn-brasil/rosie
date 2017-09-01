@@ -37,15 +37,15 @@ def _display_percentage(values):
     return '{0:.2f}%'.format(values * 100)
 
 
-def ranking():
-    data = _irregularities()
+def suspicions_list():
+    data = _suspicions()
     data['has_receipt'] = data['year'] > 2011
     data = data.sort_values(['year', 'has_receipt'],
                             ascending=[False, False])
     return display(data)
 
 
-def _irregularities():
+def _suspicions():
     data = pd.read_csv('suspicions.xz', low_memory=False)
     is_valid_suspicion = data.select_dtypes(include=[np.bool]).any(axis=1)
     data = data[is_valid_suspicion]
@@ -55,7 +55,7 @@ def _irregularities():
 
 
 def main():
-    dataset = ranking()
+    dataset = suspicions_list()
     dataset.to_csv('maratonny.csv', index=False)
 
 
