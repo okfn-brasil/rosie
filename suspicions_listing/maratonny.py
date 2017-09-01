@@ -37,26 +37,26 @@ def _display_percentage(values):
     return '{0:.2f}%'.format(values * 100)
 
 
-def suspicions_list(data_path):
-    data = _suspicions(data_path)
+def suspicions_list(data_dir):
+    data = _suspicions(data_dir)
     data['has_receipt'] = data['year'] > 2011
     data = data.sort_values(['year', 'has_receipt'],
                             ascending=[False, False])
     return display(data)
 
 
-def _suspicions(data_path):
-    data = pd.read_csv(join(data_path, 'suspicions.xz'), low_memory=False)
+def _suspicions(data_dir):
+    data = pd.read_csv(join(data_dir, 'suspicions.xz'), low_memory=False)
     is_valid_suspicion = data.select_dtypes(include=[np.bool]).any(axis=1)
     data = data[is_valid_suspicion]
-    reimbursements = pd.read_csv(join(data_path, 'reimbursements.xz'),
+    reimbursements = pd.read_csv(join(data_dir, 'reimbursements.xz'),
                                  low_memory=False)
     reimbursements = reimbursements.query('congressperson_id.notnull()')
     return pd.merge(data, reimbursements)
 
 
-def remove_hackatonny(data):
-    reports = pd.read_csv('reports.csv')
+def remove_hackatonny(data, data_dir):
+    reports = pd.read_csv(join(data_dir, 'reports.csv'))
     reports = reports.apply(lambda row: _documents_id(row['documents']), axis=1)
     data = data.drop(axis='rows', labels=list(_dropable_rows(reports, data)))
     return data
@@ -82,10 +82,10 @@ def _documents_id(doc_list):
     return doc_list
 
 
-def main(data_path):
-    dataset = suspicions_list(data_path)
-    dataset = remove_hackatonny(dataset)
-    dataset.to_csv(join(data_path, 'maratonny.csv'), index=False)
+def main(data_dir):
+    dataset = suspicions_list(data_dir)
+    dataset = remove_hackatonny(dataset, data_dir)
+    dataset.to_csv(join(data_dir, 'maratonny.csv'), index=False)
 
 
 if __name__ == '__main__':
@@ -94,9 +94,9 @@ if __name__ == '__main__':
     """
     parser = ArgumentParser(description=description)
     parser.add_argument(
-        '--data-path', '-c', default='',
+        '--data-dir', '-c', default='',
         help=('Path to a directory where you can find:'
               '  reimbursements.xz, suspicions.xz and rankings.csv')
     )
     args = parser.parse_args()
-    main(args.data_path)
+    main(args.data_dir)
