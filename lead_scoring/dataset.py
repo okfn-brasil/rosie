@@ -1,4 +1,3 @@
-import math
 import os.path
 from argparse import ArgumentParser
 from collections import OrderedDict
@@ -27,8 +26,9 @@ DISPLAY_KEYS = OrderedDict([
 def display(dataset):
     data = dataset.copy()
     data['issue_date'] = data['issue_date'].str[:10]
+    jarbas_url = 'https://jarbas.datasciencebr.com/#/documentId/{}'
     data['url'] = data['document_id'] \
-        .apply(lambda x: 'https://jarbas.datasciencebr.com/#/documentId/{}'.format(x))
+        .apply(lambda x: jarbas_url.format(x))
     data = data[[k for k in DISPLAY_KEYS.keys()]]
     return data
 
