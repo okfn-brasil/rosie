@@ -1,4 +1,4 @@
-import os.path
+from os.path import join
 from argparse import ArgumentParser
 from collections import OrderedDict
 
@@ -37,26 +37,27 @@ def _display_percentage(values):
     return '{0:.2f}%'.format(values * 100)
 
 
-def suspicions_list():
-    data = _suspicions()
+def suspicions_list(data_path):
+    data = _suspicions(data_path)
     data['has_receipt'] = data['year'] > 2011
     data = data.sort_values(['year', 'has_receipt'],
                             ascending=[False, False])
     return display(data)
 
 
-def _suspicions():
-    data = pd.read_csv('suspicions.xz', low_memory=False)
+def _suspicions(data_path):
+    data = pd.read_csv(join(data_path, 'suspicions.xz'), low_memory=False)
     is_valid_suspicion = data.select_dtypes(include=[np.bool]).any(axis=1)
     data = data[is_valid_suspicion]
-    reimbursements = pd.read_csv('reimbursements.xz', low_memory=False)
+    reimbursements = pd.read_csv(join(data_path, 'reimbursements.xz'),
+                                 low_memory=False)
     reimbursements = reimbursements.query('congressperson_id.notnull()')
     return pd.merge(data, reimbursements)
 
 
-def main():
-    dataset = suspicions_list()
-    dataset.to_csv('maratonny.csv', index=False)
+def main(data_path):
+    dataset = suspicions_list(data_path)
+    dataset.to_csv(join(data_path, 'maratonny.csv'), index=False)
 
 
 if __name__ == '__main__':
@@ -66,8 +67,8 @@ if __name__ == '__main__':
     parser = ArgumentParser(description=description)
     parser.add_argument(
         '--data-path', '-c', default='',
-        help=('Path to a directory where you can find:\n'
-              '  - reimbursements.xz\n  - suspicions.xz')
+        help=('Path to a directory where you can find:'
+              '  reimbursements.xz, suspicions.xz and rankings.csv')
     )
     args = parser.parse_args()
-    main()
+    main(args.data_path)
