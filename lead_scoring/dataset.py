@@ -55,8 +55,36 @@ def _suspicions(data_path):
     return pd.merge(data, reimbursements)
 
 
+def remove_hackatonny(data):
+    reports = pd.read_csv('reports.csv')
+    reports = reports.apply(lambda row: _documents_id(row['documents']), axis=1)
+    data = data.drop(axis='rows', labels=list(_dropable_rows(reports, data)))
+    return data
+
+
+def _dropable_rows(reports, dataset):
+    doc_list = []
+    for _ in reports:
+        for i in _:
+            doc_list.append(int(i))
+
+    data = dataset.copy()
+    data = data[data['document_id'].isin(doc_list)]
+    return list(data.index)
+
+
+def _documents_id(doc_list):
+    doc_list = doc_list.split(sep=',')
+    for i in range(len(doc_list)):
+        if not doc_list[i].isalnum():
+            doc_list[i] = ''.join([j for j in doc_list[i] if j.isalnum()])
+
+    return doc_list
+
+
 def main(data_path):
     dataset = suspicions_list(data_path)
+    dataset = remove_hackatonny(dataset)
     dataset.to_csv(join(data_path, 'maratonny.csv'), index=False)
 
 
