@@ -18,7 +18,6 @@ DISPLAY_KEYS = OrderedDict([
     ('election_expenses', 'É gasto de eleição?'),
     ('irregular_companies_classifier', 'Empresa irregular?'),
     ('has_receipt', 'Tem recibo?'),
-    ('is_in_office', 'Em mandato?'),
     ('year', 'Ano'),
     ('document_id', 'ID'),
     ('applicant_id', 'ID Deputado'),
@@ -38,9 +37,8 @@ def _display_percentage(values):
 
 def ranking():
     data = _irregularities()
-    data = pd.merge(data, _is_in_office(data))
     data['has_receipt'] = data['year'] > 2011
-    data = data.sort_values(['is_in_office', 'has_receipt'],
+    data = data.sort_values(['year', 'has_receipt'],
                             ascending=[False, False])
     remove_receipts_from_same_case(data)
     return display(data)
@@ -55,13 +53,6 @@ def remove_receipts_from_same_case(data):
     data.drop_duplicates(speed_day_keys, inplace=True)
     data.drop_duplicates(subquota_keys, inplace=True)
     return data
-
-def _is_in_office(data):
-    return data \
-        .groupby('applicant_id') \
-        .apply(lambda x: x['year'].max() >= 2016) \
-        .reset_index() \
-        .rename(columns={0: 'is_in_office'})
 
 
 def _irregularities():
