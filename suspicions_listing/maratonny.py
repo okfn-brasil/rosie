@@ -26,7 +26,7 @@ DISPLAY_KEYS = OrderedDict([
 def display(dataset):
     data = dataset.copy()
     data['issue_date'] = data['issue_date'].str[:10]
-    jarbas_url = 'https://jarbas.datasciencebr.com/#/documentId/{}'
+    jarbas_url = 'https://jarbas.serenatadeamor.org/#/documentId/{}'
     data['url'] = data['document_id'] \
         .apply(lambda x: jarbas_url.format(x))
     data = data[[k for k in DISPLAY_KEYS.keys()]]
