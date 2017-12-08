@@ -16,7 +16,7 @@ class Adapter:
 
     def __init__(self, path, years=None):
         self.path = path
-        self.years = years or self.AVAILABLE_YEARS
+        self.years = years or Dataset.AVAILABLE_YEARS
 
     @property
     def dataset(self):
