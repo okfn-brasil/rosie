@@ -64,7 +64,10 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        chamber_of_deputies = Dataset(self.path, self.years)
+        if self.years:
+            chamber_of_deputies = Dataset(self.path, self.years)
+        else:
+            chamber_of_deputies = Dataset(self.path)
         chamber_of_deputies.fetch()
         chamber_of_deputies.translate()
         chamber_of_deputies.clean()

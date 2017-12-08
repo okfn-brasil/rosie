@@ -52,7 +52,12 @@ A `/tmp/serenata-data/irregularities.xz` file will be created. It's a compacted 
 Also a target directory (where files are saved) can de passed — for example:
 
 ```console
-$ python rosie.py run chamber_of_deputies /my/serenata/directory/
+$ python rosie.py run chamber_of_deputies --path /my/serenata/directory/
+```
+
+Besides that, if you want to, you can run the project with years filter - for example:
+```console
+$ python rosie.py run chamber_of_deputies --years 2017,2016
 ```
 
 #### Test suite

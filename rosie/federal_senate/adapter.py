@@ -44,7 +44,10 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        federal_senate = Dataset(self.path, years=self.years)
+        if self.years:
+            federal_senate = Dataset(self.path, years=self.years)
+        else:
+            federal_senate = Dataset(self.path)
         federal_senate.fetch()
         federal_senate.translate()
         federal_senate_reimbursements_path = federal_senate.clean()

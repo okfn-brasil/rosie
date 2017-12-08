@@ -10,7 +10,7 @@ def entered_command(argv):
 def help():
     message = (
         'Usage:',
-        '  python rosie.py run (chamber_of_deputies | federal_senate) [<path to output directory>] [--years 2017,2016]',
+        '  python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>] [--years 2017,2016]',
         'Testing:',
         '  python rosie.py test [chamber_of_deputies | federal_senate]',
     )
@@ -28,7 +28,9 @@ def run():
         print('A module must be provided.')
         help()
         exit(1)
-    target_directory = argv[3] if len(argv) >= 4 else '/tmp/serenata-data/'
+
+    target_directory = argv[argv.index('--path') + 1] if '--path' in argv else '/tmp/serenata-data/'
+
     klass = getattr(rosie, target_module)
     if '--years' in argv:
         years = argv[argv.index('--years') + 1]
