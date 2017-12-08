@@ -42,8 +42,15 @@ class Adapter:
         self._dataset.rename(columns=columns, inplace=True)
 
     def rename_categories(self):
-        # There's no documented type for `3`, thus we assume it's an input error
-        self._dataset['document_type'].replace({3: None}, inplace=True)
+        # There's no documented type for `3`, `4` and `5`, thus we assume it's
+        # an input error until we hear back from chamber of deputies
+        converters = {
+                3: None,
+                4: None,
+                5: None,
+            }
+        self._dataset['document_type'].replace(converters, inplace=True)
+        self._dataset['document_type'].replace(converters, inplace=True)
         self._dataset['document_type'] = self._dataset['document_type'].astype(
             'category')
         types = ['bill_of_sale', 'simple_receipt', 'expense_made_abroad']
@@ -59,7 +66,6 @@ class Adapter:
         os.makedirs(self.path, exist_ok=True)
         chamber_of_deputies = Dataset(self.path, self.years)
         chamber_of_deputies.fetch()
-        chamber_of_deputies.convert_to_csv()
         chamber_of_deputies.translate()
         chamber_of_deputies.clean()
         fetch(self.COMPANIES_DATASET, self.path)
