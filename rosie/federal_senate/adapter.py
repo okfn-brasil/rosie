@@ -16,7 +16,7 @@ class Adapter:
 
     def __init__(self, path, years=None):
         self.path = path
-        self.years = years
+        self.years = years or self.AVAILABLE_YEARS
 
     @property
     def dataset(self):
@@ -44,10 +44,7 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        if self.years:
-            federal_senate = Dataset(self.path, years=self.years)
-        else:
-            federal_senate = Dataset(self.path)
+        federal_senate = Dataset(self.path, years=self.years)
         federal_senate.fetch()
         federal_senate.translate()
         federal_senate_reimbursements_path = federal_senate.clean()

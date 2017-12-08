@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from serenata_toolbox.chamber_of_deputies.dataset import Dataset
+from serenata_toolbox.chamber_of_deputies.dataset import Dataset, AVAILABLE_YEARS
 from serenata_toolbox.datasets import fetch
 
 COLUMNS = {
@@ -19,7 +19,7 @@ class Adapter:
 
     def __init__(self, path, years=None):
         self.path = path
-        self.years = years
+        self.years = years or AVAILABLE_YEARS
 
     @property
     def dataset(self):
@@ -64,10 +64,7 @@ class Adapter:
 
     def update_datasets(self):
         os.makedirs(self.path, exist_ok=True)
-        if self.years:
-            chamber_of_deputies = Dataset(self.path, self.years)
-        else:
-            chamber_of_deputies = Dataset(self.path)
+        chamber_of_deputies = Dataset(self.path, self.years)
         chamber_of_deputies.fetch()
         chamber_of_deputies.translate()
         chamber_of_deputies.clean()
