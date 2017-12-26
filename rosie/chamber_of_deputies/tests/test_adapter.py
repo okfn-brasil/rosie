@@ -10,6 +10,9 @@ import pandas as pd
 from rosie.chamber_of_deputies.adapter import COLUMNS as ADAPTER_COLUMNS
 from rosie.chamber_of_deputies.adapter import Adapter as subject_class
 
+from serenata_toolbox.chamber_of_deputies.dataset import Dataset, AVAILABLE_YEARS
+from serenata_toolbox.datasets import fetch
+
 
 class TestAdapter(TestCase):
 
@@ -26,6 +29,18 @@ class TestAdapter(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.temp_path)
+
+    def test_quantity_of_downloaded_datasets_all_years_fetch(self):
+        years = AVAILABLE_YEARS
+        chamber_of_deputies = Dataset(self.temp_path, years)
+        datasets = chamber_of_deputies.fetch()
+        self.assertEqual(10, len(datasets))
+
+    def test_filter_years_fetch(self):
+        years = [2017,2016]
+        chamber_of_deputies = Dataset(self.temp_path, years)
+        datasets = chamber_of_deputies.fetch()
+        self.assertEqual(3, len(datasets))
 
     @patch('rosie.chamber_of_deputies.adapter.Dataset')
     @patch('rosie.chamber_of_deputies.adapter.fetch')
