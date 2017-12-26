@@ -1,20 +1,26 @@
+"""Rosie.
+
+Usage:
+    python rosie.py run (chamber_of_deputies | federal_senate)
+    python rosie.py run (chamber_of_deputies | federal_senate) [--years 2017,2016]
+    python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>]
+    python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>] [--years 2017,2016]
+    python rosie.py test [chamber_of_deputies | federal_senate]
+
+Options:
+    --years   runs rosie wuth years filter
+    --path    runs rosie with specific directory
+
+"""
+
 from sys import argv, exit
+from docopt import docopt
 
 
 def entered_command(argv):
     if len(argv) >= 2:
         return argv[1]
     return None
-
-
-def help():
-    message = (
-        'Usage:',
-        '  python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>] [--years 2017,2016]',
-        'Testing:',
-        '  python rosie.py test [chamber_of_deputies | federal_senate]',
-    )
-    print('\n'.join(message))
 
 
 def run():
@@ -25,8 +31,8 @@ def run():
     if len(argv) >= 3:
         target_module = argv[2]
     else:
-        print('A module must be provided.')
-        help()
+        arguments = docopt(__doc__, help=True)
+        print(arguments)
         exit(1)
 
     target_directory = argv[argv.index('--path') + 1] if '--path' in argv else '/tmp/serenata-data/'
