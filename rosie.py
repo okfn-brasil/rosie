@@ -34,7 +34,8 @@ def run(**args):
 
     target_directory = args['<path>'] if args['--path'] else '/tmp/serenata-data/'
 
-    target_module = 'chamber_of_deputies' if args['chamber_of_deputies'] else 'federal_senate'
+    commands = ('chamber_of_deputies', 'federal_senate')
+    target_module, *_ =  filter(lambda x: arguments.get(x), commands)
 
     klass = getattr(rosie, target_module)
 
@@ -47,7 +48,6 @@ def run(**args):
 
 
 def test(**args):
-    print(args)
     import os
 
     import unittest
