@@ -34,13 +34,13 @@ class TestAdapter(TestCase):
         years = AVAILABLE_YEARS
         chamber_of_deputies = Dataset(self.temp_path, years)
         datasets = chamber_of_deputies.fetch()
-        self.assertEqual(10, len(datasets))
+        self.assertEqual(len(AVAILABLE_YEARS) + 1, len(datasets)) # data from all years + suspicions file
 
     def test_filter_years_fetch(self):
-        years = [2017,2016]
+        years = [2017, 2016]
         chamber_of_deputies = Dataset(self.temp_path, years)
         datasets = chamber_of_deputies.fetch()
-        self.assertEqual(3, len(datasets))
+        self.assertEqual(3, len(datasets)) # data from 2 years + suspicions file
 
     @patch('rosie.chamber_of_deputies.adapter.Dataset')
     @patch('rosie.chamber_of_deputies.adapter.fetch')

@@ -8,8 +8,8 @@ Usage:
     python rosie.py test [chamber_of_deputies | federal_senate]
 
 Options:
-    --years   runs rosie wuth years filter
-    --path    runs rosie with specific directory
+    --years   runs Rosie fetching data and finding suspicions for a specific set of years
+    --path    directory in which Rosie saves fetched data and the suspicions CSV [default: /tmp/serenata-data]
 
 """
 
