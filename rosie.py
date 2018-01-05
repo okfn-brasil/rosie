@@ -1,11 +1,11 @@
 """Rosie.
 
 Usage:
-    python rosie.py run (chamber_of_deputies | federal_senate)
-    python rosie.py run (chamber_of_deputies | federal_senate) [--years 2017,2016]
-    python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>]
-    python rosie.py run (chamber_of_deputies | federal_senate) [--path <path to output directory>] [--years 2017,2016]
-    python rosie.py test [chamber_of_deputies | federal_senate]
+  rosie.py run (chamber_of_deputies | federal_senate)
+  rosie.py run (chamber_of_deputies | federal_senate) [--years <years>]
+  rosie.py run (chamber_of_deputies | federal_senate) [--path <path>]
+  rosie.py run (chamber_of_deputies | federal_senate) [--path] [--years <years>]
+  rosie.py test [chamber_of_deputies | federal_senate]
 
 Options:
     --years   runs Rosie fetching data and finding suspicions for a specific set of years
@@ -13,49 +13,52 @@ Options:
 
 """
 
-from sys import argv, exit
+from sys import exit
 from docopt import docopt
 
 
-def entered_command(argv):
-    if len(argv) >= 2:
-        return argv[1]
-    return None
+def main():
+    arguments = docopt(__doc__)
+
+    if arguments['run']:
+        run(**arguments)
+
+    if arguments['test']:
+        return test(**arguments)
 
 
-def run():
+def run(**args):
     import rosie
     import rosie.chamber_of_deputies
     import rosie.federal_senate
 
-    if len(argv) >= 3:
-        target_module = argv[2]
-    else:
-        arguments = docopt(__doc__, help=True)
-        print(arguments)
-        exit(1)
+    target_directory = args['<path>'] if args['--path'] else '/tmp/serenata-data/'
 
-    target_directory = argv[argv.index('--path') + 1] if '--path' in argv else '/tmp/serenata-data/'
+    target_module = 'chamber_of_deputies' if args['chamber_of_deputies'] else 'federal_senate'
 
     klass = getattr(rosie, target_module)
-    if '--years' in argv:
-        years = argv[argv.index('--years') + 1]
+
+    if args['--years']:
+        years = args['<years>']
         years = [int(num) for num in years.split(',')]
         klass.main(target_directory, years=years)
     else:
         klass.main(target_directory)
 
 
-def test():
+def test(**args):
+    print(args)
     import os
 
     import unittest
 
     loader = unittest.TestLoader()
 
-    if len(argv) >= 3:
-        target_module = argv[2]
-        tests_path = os.path.join('rosie', target_module)
+    if args['chamber_of_deputies']:
+        tests_path = os.path.join('rosie', 'chamber_of_deputies')
+        tests = loader.discover(tests_path)
+    elif args['federal_senate']:
+        tests_path = os.path.join('rosie', 'federal_senate')
         tests = loader.discover(tests_path)
     else:
         tests = loader.discover('rosie')
@@ -67,6 +70,5 @@ def test():
         exit(1)
 
 
-commands = {'run': run, 'test': test}
-command = commands.get(entered_command(argv), help)
-command()
+if __name__ == '__main__':
+    main()
