@@ -49,13 +49,14 @@ The toolbox expects to find Amazon credentials in a `config.ini` file. If You ge
 
 A `/tmp/serenata-data/irregularities.xz` file will be created. It's a compacted CSV with all the irregularities Rosie is able to find.
 
-Also a target directory (where files are saved) can de passed — for example:
+Also a target directory (where files are saved) can de passed — for example:
 
 ```console
 $ python rosie.py run chamber_of_deputies --path /my/serenata/directory/
 ```
 
-Besides that, if you want to, you can run the project with years filter - for example:
+Besides that, if you want to, you can run the project with years filter — for example:
+
 ```console
 $ python rosie.py run chamber_of_deputies --years 2017,2016
 ```
