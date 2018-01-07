@@ -1,15 +1,12 @@
-"""Rosie.
+"""Hi, this is Serenata's Rosie!
 
 Usage:
-  rosie.py run (chamber_of_deputies | federal_senate)
-  rosie.py run (chamber_of_deputies | federal_senate) [--years <years>]
-  rosie.py run (chamber_of_deputies | federal_senate) [--path <path>]
-  rosie.py run (chamber_of_deputies | federal_senate) [--path] [--years <years>]
+  rosie.py run (chamber_of_deputies | federal_senate) [--path=<path>] [--years=<years>]
   rosie.py test [chamber_of_deputies | federal_senate]
 
 Options:
-    --years   runs Rosie fetching data and finding suspicions for a specific set of years
-    --path    directory in which Rosie saves fetched data and the suspicions CSV [default: /tmp/serenata-data]
+  --years=<years>  runs Rosie fetching data and finding suspicions for a specific set of years (use a comma to separate years)
+  --path=<path>    directory in which Rosie saves fetched data and the suspicions CSV [default: /tmp/serenata-data]
 
 """
 
@@ -32,19 +29,15 @@ def run(**args):
     import rosie.chamber_of_deputies
     import rosie.federal_senate
 
-    target_directory = args['<path>'] if args['--path'] else '/tmp/serenata-data/'
-
     commands = ('chamber_of_deputies', 'federal_senate')
-    target_module, *_ =  filter(lambda x: arguments.get(x), commands)
+    target_module, *_ =  filter(lambda x: args.get(x), commands)
 
     klass = getattr(rosie, target_module)
 
     if args['--years']:
-        years = args['<years>']
-        years = [int(num) for num in years.split(',')]
-        klass.main(target_directory, years=years)
-    else:
-        klass.main(target_directory)
+        args['--years'] = [int(v) for v in args['--years'].split(',')]
+
+    klass.main(args['--path'], args['--years'])
 
 
 def test(**args):
@@ -54,14 +47,14 @@ def test(**args):
 
     loader = unittest.TestLoader()
 
+    test_path = 'rosie'
+
     if args['chamber_of_deputies']:
-        tests_path = os.path.join('rosie', 'chamber_of_deputies')
-        tests = loader.discover(tests_path)
+        tests_path = os.path.join(test_path, 'chamber_of_deputies')
     elif args['federal_senate']:
-        tests_path = os.path.join('rosie', 'federal_senate')
-        tests = loader.discover(tests_path)
-    else:
-        tests = loader.discover('rosie')
+        tests_path = os.path.join(test_path, 'federal_senate')
+
+    tests = loader.discover(test_path)
 
     testRunner = unittest.runner.TextTestRunner()
     result = testRunner.run(tests)
