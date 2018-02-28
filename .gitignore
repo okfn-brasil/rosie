@@ -1,6 +1,1 @@
-*.pyc
-.coverage
-.python-version
-__pycache__/
-htmlcov/
 config.ini
